@@ -1,0 +1,153 @@
+var backImage=createSprite(200,200); //if declared below sprites image overwrites the sprites
+backImage.setAnimation("santa_1");
+var computerPaddle=createSprite(35,210,10,70);
+var playerPaddle=createSprite(360,210,10,70);
+var ball=createSprite(200,210,10,10);
+
+var gameState="start";
+
+var playerScore=0;
+
+var computerScore=0;
+
+
+
+//animation
+computerPaddle.setAnimation("hammer_gold_1");
+computerPaddle.scale=0.5;
+playerPaddle.setAnimation("pan_1");
+playerPaddle.scale=0.5;
+ball.setAnimation("golfball_1");
+ball.scale=0.05;
+createEdgeSprites();
+//computerPaddle.y=ball.y;
+//function creation
+function dots()
+{
+  //x1-start position of x,x2-end position of x
+  //line(200,0,200,10);
+  //y in the for loop is referred to y1
+  //y in the line is referred to y2
+  
+  for(var y=0;y<400;y=y+30)
+  {
+    //fill("red");
+    stroke("red");
+    strokeWeight(6);
+    line(200,y,200,y+10);
+  }
+}
+
+function ttext()
+{
+  fill("white");
+  textSize(30);
+  text("Press SPACE to Start",40,320);
+}
+
+function score()
+{
+  fill("white");
+  textSize(15);
+  text("Computer: "+computerScore,10,20);
+  text("Player: "+playerScore,315,20);
+}
+
+
+function draw() 
+{
+  //background("black");
+  
+  
+  playerPaddle.shapeColor="yellow";
+  computerPaddle.shapeColor="red";
+  ball.shapeColor="white";
+  playerPaddle.y=World.mouseY;
+  //computerPaddle.y=ball.y;
+  
+  
+  computerPaddle.bounceOff(topEdge);
+  computerPaddle.bounceOff(bottomEdge);
+  
+  /*if(ball.isTouching(playerPaddle)) //sprite rotates when ball touches player
+  {
+    //rotation property
+    playerPaddle.rotation=playerPaddle.rotation+50; 
+  }*/
+    
+  
+  if(ball.x>400||ball.x<0)
+  {
+    playSound("sound://category_instrumental/digital_downscale_1.mp3", false);
+    
+    if(ball.x>400)
+    {
+      computerScore++;
+    }
+    if(ball.x<0)
+    {
+      playerScore++;
+    }
+    ball.x=200;
+    ball.y=210;
+    ball.velocityY=0;
+    ball.velocityX=0;
+    computerPaddle.x=35;
+    computerPaddle.y=210;
+    computerPaddle.velocityY=0;
+    gameState="start";
+  }
+  
+  
+  if(computerScore===5 || playerScore===5)
+  {
+    //playSound("sound://category_instrumental/sax_upscale_2.mp3", true);
+    
+    gameState="end";
+
+        
+  }
+  
+  if(keyDown("space") && gameState==="start")
+  {
+    //playSound("sound://default.mp3", false);
+    playSound("sound://category_music/crackle_loss_1.mp3", false);
+    ball.velocityY=4;
+    ball.velocityX=7;
+    
+    computerPaddle.velocityY=randomNumber(-5,5);
+    gameState="play";
+  }
+  
+  ball.bounceOff(topEdge);     
+  ball.bounceOff(bottomEdge);
+  ball.bounceOff(playerPaddle);
+  ball.bounceOff(computerPaddle);
+  
+  if(keyDown("r") || keyDown("R"))
+  {
+    gameState="start";
+    computerScore=0;
+    playerScore=0;
+  }
+  
+  drawSprites();
+  if(gameState==="end")
+  {
+    fill("white");
+    textSize(30);
+    text("Game Over",130,320);
+    textSize(20);
+    text("Press 'R' to Restart",110,350);
+  }
+  
+  if(gameState==="start")
+  {
+    ttext();
+  }
+  score();
+  
+  
+  
+  //dots(); //function called
+}
